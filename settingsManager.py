@@ -1,4 +1,4 @@
-import os, gtk, gobject, tools
+import sys, os, gtk, gobject, tools
 
 class settingsManager:
 	def __init__(self, roxe, pymaxe, configure):
@@ -41,11 +41,11 @@ class settingsManager:
 				self.gui.get_object('filechooserbutton4').set_filename(mp4open)
 		else:
 			if mp3open:
-				if not '/usr/bin' in mp3open:
+				if not '/usr/bin' in mp3open and not sys.platform == 'darwin':
 					mp3open = '/usr/bin/' + mp3open
 				self.gui.get_object('filechooserbutton3').set_filename(mp3open)
 			if mp4open:
-				if not '/usr/bin' in mp4open:
+				if not '/usr/bin' in mp4open and not sys.platform == 'darwin':
 					mp4open = '/usr/bin/' + mp4open
 				self.gui.get_object('filechooserbutton4').set_filename(mp4open)
 		self.gui.get_object('checkbutton5').set_active(self.config.getSetting('General', 'preview_video', True))

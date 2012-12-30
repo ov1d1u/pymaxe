@@ -11,7 +11,10 @@ if os.environ.get("APPDATA"):
 	osystem = 'WIN'
 	userpath = os.environ.get("APPDATA")
 else:
-	osystem = 'UNX'
+    if sys.platform == 'darwin':
+        osystem = 'OSX'
+    else:
+    	osystem = 'UNX'
 	userpath = os.environ.get("HOME")
 import thread2, subprocess, webbrowser, socket, urllib, gtk, gobject, pango, configure, random, time, datetime, glib
 import tools, searcher, details, coverFinder, mediaPlayer, errorManager
@@ -90,6 +93,8 @@ class Main:
 		if osystem == 'WIN':
 			self.gui.get_object('eventbox4').get_window().ensure_native()
 			xid = self.gui.get_object('eventbox4').get_window().handle
+		elif osystem == 'OSX':
+		    xid = self.gui.get_object('eventbox4').window.nsview
 		else:
 			xid = self.gui.get_object('eventbox4').window.xid
 		self.config = configure.Config()
@@ -248,7 +253,10 @@ class Main:
 				icon = VIDEO_FILE_ICON
 			elif x[0] == 0x03:
 				icon = ALBUM_FILE_ICON
-			liststore.append([icon, x[1], x[2], x[3], x[0]])
+            try:
+    		    liststore.append([icon, x[1], x[2], x[3], x[0]])
+    		except:
+    		    pass # shitty OSX
 		
 	def selectSong(self, data, event=None):
 		if event:

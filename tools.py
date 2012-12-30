@@ -91,40 +91,54 @@ def getOpenWith(ext):
 			command = command.split()
 	else:
 		try:
-			import mimetypes, os
-			mimetypes.init()
-			mime = mimetypes.types_map[ext]
-			c = 'xdg-mime query default ' + mime
-			c = c.split()
-			result = subprocess.Popen(c, stdout=subprocess.PIPE)
-			result.wait()
-			result = result.stdout.read()
-			fh = open('/usr/share/applications/'+result[:-1])
-			for x in fh.readlines():
-				if x.startswith('Exec'):
-					g = x.split('=')
-					command = g[1][:-1]
-					command = command.split()
-					if "%U" in command:
-						command.pop(command.index("%U"))
-		except Exception, e:
-			# try to find a way to open some of most popular media files
-			command = '/usr/bin/firefox'
-			if (ext == '.mp3'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'juk', 'totem', 'clementine'])
-			if (ext == '.aac'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'juk', 'totem', 'clementine'])
-			if (ext == '.ogg'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'juk', 'totem', 'clementine'])
-			if (ext == '.mp4'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
-			if (ext == '.avi'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
-			if (ext == '.mpg'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
-			if (ext == '.ogv'):
-				command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
-			command = command.split()
+			import LaunchServices as LS  # if this works, we are on Apple OSX
+			import urllib
+			os_status, app_ref, appurl = LS.LSGetApplicationForInfo(
+					LS.kLSUnknownType,
+					LS.kLSUnknownCreator,
+					ext[1:],
+					LS.kLSRolesAll,
+					None,
+					None
+				)
+			command = [app_ref.as_pathname()]
+		except:
+			try:
+				import mimetypes, os
+				mimetypes.init()
+				mime = mimetypes.types_map[ext]
+				c = 'xdg-mime query default ' + mime
+				c = c.split()
+				result = subprocess.Popen(c, stdout=subprocess.PIPE)
+				result.wait()
+				result = result.stdout.read()
+				fh = open('/usr/share/applications/'+result[:-1])
+				for x in fh.readlines():
+					if x.startswith('Exec'):
+						g = x.split('=')
+						command = g[1][:-1]
+						command = command.split()
+						if "%U" in command:
+							command.pop(command.index("%U"))
+			except Exception, e:
+				# try to find a way to open some of most popular media files
+				command = '/usr/bin/firefox'
+				if (ext == '.mp3'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'juk', 'totem', 'clementine'])
+				if (ext == '.aac'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'juk', 'totem', 'clementine'])
+				if (ext == '.ogg'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'juk', 'totem', 'clementine'])
+				if (ext == '.mp4'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
+				if (ext == '.avi'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
+				if (ext == '.mpg'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
+				if (ext == '.ogv'):
+					command = findExec(['smplayer', 'umplayer', 'vlc', 'dragon', 'totem', 'clementine'])
+				command = command.split()
+	print 'Command:', command
 	return command
 
 def strip_win32_incompat(string, BAD = '\:*?;"<>|/'):
