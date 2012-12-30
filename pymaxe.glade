@@ -125,7 +125,6 @@ and others...</property>
                 <child>
                   <object class="GtkButton" id="button11">
                     <property name="label">gtk-close</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -220,7 +219,6 @@ and others...</property>
             <child>
               <object class="GtkButton" id="button7">
                 <property name="label" translatable="yes">Cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -235,7 +233,6 @@ and others...</property>
             <child>
               <object class="GtkButton" id="button8">
                 <property name="label" translatable="yes">Save</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -337,7 +334,6 @@ and others...</property>
             <property name="can_focus">False</property>
             <child>
               <object class="GtkMenuItem" id="pymaxemenu">
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Pymaxe</property>
@@ -349,7 +345,6 @@ and others...</property>
                     <child>
                       <object class="GtkImageMenuItem" id="prefmenu">
                         <property name="label">gtk-preferences</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -359,7 +354,6 @@ and others...</property>
                     </child>
                     <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -367,7 +361,6 @@ and others...</property>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem1">
                         <property name="label">gtk-quit</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -381,7 +374,6 @@ and others...</property>
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem4">
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Help</property>
@@ -392,7 +384,6 @@ and others...</property>
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkMenuItem" id="menuitem1">
-                        <property name="use_action_appearance">False</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Debugger</property>
                         <property name="use_underline">True</property>
@@ -402,7 +393,6 @@ and others...</property>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem10">
                         <property name="label">gtk-about</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -515,7 +505,6 @@ and others...</property>
                     </child>
                     <child>
                       <object class="GtkButton" id="button1">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -660,7 +649,6 @@ and others...</property>
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton" id="toolbutton1">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
@@ -707,7 +695,6 @@ and others...</property>
                     </child>
                     <child>
                       <object class="GtkButton" id="toolbutton2">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
@@ -941,7 +928,7 @@ and others...</property>
                               </object>
                               <packing>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
+                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
@@ -958,7 +945,7 @@ and others...</property>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
+                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
@@ -975,7 +962,7 @@ and others...</property>
                                 <property name="top_attach">2</property>
                                 <property name="bottom_attach">3</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
+                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
@@ -1096,7 +1083,6 @@ and others...</property>
                             <property name="can_focus">False</property>
                             <child>
                               <object class="GtkButton" id="button5">
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1118,7 +1104,6 @@ and others...</property>
                             </child>
                             <child>
                               <object class="GtkButton" id="button6">
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1219,7 +1204,6 @@ and others...</property>
                             </child>
                             <child>
                               <object class="GtkScaleButton" id="scalebutton1">
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1240,7 +1224,6 @@ audio-volume-medium</property>
                             </child>
                             <child>
                               <object class="GtkButton" id="button12">
-                                <property name="use_action_appearance">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="relief">none</property>
@@ -1291,7 +1274,6 @@ audio-volume-medium</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButton" id="button4">
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -1336,7 +1318,6 @@ audio-volume-medium</property>
                 <child>
                   <object class="GtkButton" id="button2">
                     <property name="label" translatable="yes">Open web page</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -1351,7 +1332,6 @@ audio-volume-medium</property>
                 <child>
                   <object class="GtkButton" id="button3">
                     <property name="label" translatable="yes">Open in media player</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -1576,7 +1556,6 @@ audio-volume-medium</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButton" id="button9">
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -1620,7 +1599,6 @@ audio-volume-medium</property>
                 <child>
                   <object class="GtkButton" id="button10">
                     <property name="label" translatable="yes">Open Last.fm page</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -1791,7 +1769,6 @@ Please note that Pymaxe Music Downloader is a voluntary project. It takes time t
     <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem2">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Download to &lt;folder&gt;</property>
@@ -1799,7 +1776,6 @@ Please note that Pymaxe Music Downloader is a voluntary project. It takes time t
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem3">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Download to...</property>
@@ -1808,14 +1784,12 @@ Please note that Pymaxe Music Downloader is a voluntary project. It takes time t
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="menuitem5">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem6">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Copy webpage URL</property>
@@ -1824,7 +1798,6 @@ Please note that Pymaxe Music Downloader is a voluntary project. It takes time t
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem7">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Open webpage</property>
@@ -1842,7 +1815,7 @@ Please note that Pymaxe Music Downloader is a voluntary project. It takes time t
       <!-- column-name TIME -->
       <column type="gchararray"/>
       <!-- column-name TYPE -->
-      <column type="gchararray"/>
+      <column type="gint"/>
     </columns>
   </object>
   <object class="GtkTreeModelFilter" id="treemodelfilter1">
