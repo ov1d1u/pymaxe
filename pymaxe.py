@@ -253,10 +253,7 @@ class Main:
                 icon = VIDEO_FILE_ICON
             elif x[0] == 0x03:
                 icon = ALBUM_FILE_ICON
-        try:
             liststore.append([icon, x[1], x[2], x[3], x[0]])
-        except:
-            pass # shitty OSX
 
     def selectSong(self, data, event=None):
         if event:
