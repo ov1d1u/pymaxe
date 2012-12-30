@@ -27,11 +27,11 @@ def build_re():
     for i in LHan:
         if isinstance(i, list):
             f, t = i
-            try: 
+            try:
                 f = unichr(f)
                 t = unichr(t)
                 L.append('%s-%s' % (f, t))
-            except: 
+            except:
                 pass # A narrow python build, so can't use chars > 65535 without surrogate pairs!
 
         else:
@@ -44,58 +44,58 @@ def build_re():
     return re.compile(RE, re.UNICODE)
 
 class Lyrics:
-	def __init__(self, callback, download = None):
-		self.callback = callback
-		self.download = download
-		self.done = False
-		self.ALSongEngine = ALSongEngine(self.gotLyrics)
-		self.TTPlayer = TTPlayer.LyricsFetcher()
-		
-	def search(self, artist, title):
-		self.done = False
-		artist = re.sub(r'\[[^)]*\]', '', artist)
-		artist = re.sub(r'\([^)]*\)', '', artist)
-		title = re.sub(r'\[[^)]*\]', '', title)
-		title = re.sub(r'\([^)]*\)', '', title)
-		data = {'artist' : artist, 'title' : title}
-		threading.Thread(target=self.doSearch, args=(data, )).start()
-	
-	def doSearch(self, data):
-		self.data = data
-		print 'Searching lyrics.....'
-		res = self.TTPlayer.get_lyrics(data['artist'], data['title'])
-		if not len(res) == 0:
-			if type(res) == str:
-				lyrics = res.splitlines()
-			elif type(res) == list:
-				lyrics = self.TTPlayer.get_lyrics_from_list(res[0]).splitlines()
-			for x in range(0, 5):
-				try:
-					lyrics.pop(0)
-				except:
-					pass
-			lyrics = os.linesep.join(lyrics)
-			RE = build_re()
-			lyrics = RE.sub('', unicode(lyrics)).encode('utf-8')
-			self.gotLyrics(lyrics)
-			self.done = True
-			return
-		self.ALSongEngine.find(data)
-		self.done = True
-		
-	def gotLyrics(self, lyrics):
-		versuri = {}
-		self.ALSongEngine.stop()
-		if self.download:
-			gobject.idle_add(self.callback, lyrics, self.download)
-			return
-		lrc = lyrics.split(os.linesep)
-		for x in lrc:
-			try:
-				text = x[10:]
-				timp = timeparser.parse('00:' + re.compile('\[([^)]*)\]').search(x).groups()[0])
-				versuri[timp] = text
-			except:
-				pass
-		self.data['lyrics'] = versuri
-		gobject.idle_add(self.callback, self.data)
+    def __init__(self, callback, download = None):
+        self.callback = callback
+        self.download = download
+        self.done = False
+        self.ALSongEngine = ALSongEngine(self.gotLyrics)
+        self.TTPlayer = TTPlayer.LyricsFetcher()
+
+    def search(self, artist, title):
+        self.done = False
+        artist = re.sub(r'\[[^)]*\]', '', artist)
+        artist = re.sub(r'\([^)]*\)', '', artist)
+        title = re.sub(r'\[[^)]*\]', '', title)
+        title = re.sub(r'\([^)]*\)', '', title)
+        data = {'artist' : artist, 'title' : title}
+        threading.Thread(target=self.doSearch, args=(data, )).start()
+
+    def doSearch(self, data):
+        self.data = data
+        print 'Searching lyrics.....'
+        res = self.TTPlayer.get_lyrics(data['artist'], data['title'])
+        if not len(res) == 0:
+            if type(res) == str:
+                lyrics = res.splitlines()
+            elif type(res) == list:
+                lyrics = self.TTPlayer.get_lyrics_from_list(res[0]).splitlines()
+            for x in range(0, 5):
+                try:
+                    lyrics.pop(0)
+                except:
+                    pass
+            lyrics = os.linesep.join(lyrics)
+            RE = build_re()
+            lyrics = RE.sub('', unicode(lyrics)).encode('utf-8')
+            self.gotLyrics(lyrics)
+            self.done = True
+            return
+        self.ALSongEngine.find(data)
+        self.done = True
+
+    def gotLyrics(self, lyrics):
+        versuri = {}
+        self.ALSongEngine.stop()
+        if self.download:
+            gobject.idle_add(self.callback, lyrics, self.download)
+            return
+        lrc = lyrics.split(os.linesep)
+        for x in lrc:
+            try:
+                text = x[10:]
+                timp = timeparser.parse('00:' + re.compile('\[([^)]*)\]').search(x).groups()[0])
+                versuri[timp] = text
+            except:
+                pass
+        self.data['lyrics'] = versuri
+        gobject.idle_add(self.callback, self.data)

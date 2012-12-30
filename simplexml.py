@@ -73,7 +73,7 @@ def parsestring(s):
 if __name__ == "__main__":
     xml = parse("fixture.xml")
     print xml.name
-    print xml.hair["style"] 
+    print xml.hair["style"]
     print xml.like
 
     print len(xml.name)
