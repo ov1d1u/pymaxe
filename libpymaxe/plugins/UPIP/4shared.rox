@@ -1,0 +1,33 @@
+info:
+name = 4Shared UPIP
+author = Ovidiu D. Nitan
+version = 0.01
+matchurl = 4shared.com
+:end
+
+search:
+url = http://search.4shared.com/q/CCQD/1/music/%q?view=searchMainField
+method = get
+start = class="listView">
+end = <script src="/js/ui/FolderTreeWidget.js" type="text/javascript"></script>
+:end
+
+results:
+filetype = audio
+timeformat = none
+start = <div class="imgbox" align="center">
+end = </td>
+title_start = title="
+title_end = "/>
+url_start = <a href="
+url_end = "
+:end
+
+details:
+title_start = <h1>
+title_end =  </h1>
+timeformat = none
+filetype = audio
+downurl_start = var flvLink = '
+downurl_end = '
+:end
