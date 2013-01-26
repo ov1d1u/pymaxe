@@ -98,7 +98,7 @@ class Downloader:
             if len(workers) == 0:
                 break
             time.sleep(0.1)
-        self.callback()
+        thread2.Thread(target=self.callback).start()
 
     def callback(self):
         if self.convert:

@@ -11,7 +11,7 @@ class coverFinder:
 
     def createQuery(self, string, mbid = None):
         if not mbid:
-            query = urllib.quote(string)
+            query = urllib.quote(string.encode('utf-8'))
             return 'http://ws.audioscrobbler.com/2.0/?method=track.search&track=' + query + '&api_key=' + self.api
         else:
             return 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&mbid=' + mbid + '&api_key=' + self.api

@@ -100,7 +100,7 @@ class Main:
         self.config = configure.Config()
         self.Search = searcher.PymaxeSearch(Pymaxe, self.populateResults)
         self.Details = details.Details(Pymaxe, self.showDetails)
-        self.CoverFind = coverFinder.coverFinder(Pymaxe, self.setCover)
+        self.coverfinder = coverFinder.coverFinder(Pymaxe, self.setCover)
         self.mp = mediaPlayer.mediaPlayer(self.config, self.setAdjustment, xid)
         self.settingsManager = settingsManager.settingsManager(self, Pymaxe, self.config)
         self.Album = album.Album(self.showAlbumDetails)
@@ -332,10 +332,10 @@ class Main:
         self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
         self.gui.get_object('hbox5').hide()
         self.gui.get_object('hbox13').hide()
-        self.CoverFind.abort()
+        self.coverfinder.abort()
         if self.config.getSetting('General', 'download_covers', True):
-            self.CoverFind.searchCover(data['title'])
-            self.coverFindJob = data['url']
+            self.coverfinder.searchCover(data['title'])
+            self.coverfinderJob = data['url']
         if ' - ' in data['title']:
             (artist, title) = data['title'].rsplit(' - ', 1)
             self.gui.get_object('titleLabel').set_text(title.lstrip())
@@ -390,9 +390,9 @@ class Main:
             self.gui.get_object('button9').disconnect(self.downalbum_conn)
         self.openalbum_conn = self.gui.get_object('button10').connect("clicked", self.openAlbumSourcePage, data['url'])
         self.downalbum_conn = self.gui.get_object('button9').connect("clicked", self.downloadAlbum, data)
-        self.CoverFind.abort()
+        self.coverfinder.abort()
         if self.config.getSetting('General', 'download_covers', True):
-            self.CoverFind.searchCover(data['name'], data['mbid'])
+            self.coverfinder.searchCover(data['name'], data['mbid'])
         self.gui.get_object('albumLabel').set_text(data['name'])
         self.gui.get_object('artistAlbumLabel').set_text(data['artist'])
         self.gui.get_object('labelTracksNo').set_text(data['tracks'])
@@ -408,7 +408,7 @@ class Main:
             treeselection = self.gui.get_object('treeview1').get_selection()
             (model, iter) = treeselection.get_selected()
             url = model[iter][2]
-            if self.coverFindJob != url:
+            if self.coverfinderJob != url:
                 return
         pixbuf = tools.Image_to_GdkPixbuf(data)
         if self.gui.get_object('hbox2').get_visible():
@@ -576,7 +576,7 @@ class Main:
         active = cmodel[index][2]
         if active == str(0x00):
             return True
-        if model[iter][4] == active:
+        if str(model[iter][4]) == str(active):
             return True
 
     def modify_func(self, model, iter, col, attrs):

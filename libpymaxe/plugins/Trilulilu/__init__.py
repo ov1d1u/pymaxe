@@ -95,7 +95,6 @@ class Plugin:
         gsig = gsig[1].split("\x00")
         sig = gsig[0]
         downurl = "http://fs" + server + ".trilulilu.ro/stream.php?type=audio&source=site&hash=" + shash + "&username=" + username + "&key=" + key + '&sig=' + sig + '&exp=' + str(exp)
-        print downurl
         rq = urllib2.Request(downurl)
         rq.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
         gtdata = urllib2.urlopen(rq)
