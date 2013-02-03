@@ -88,9 +88,9 @@ class Plugin:
         timp = timp.split()
         unixtime = int(calendar.timegm(time.strptime(timp[0] + " " + months[timp[1]] + " " + timp[2] + " " + timp[3], "%d %m %Y %H:%M:%S")))
         exp = unixtime + 60
-        gserver = amfdata.split("server\x02\x00\x02")
+        gserver = amfdata.split("server\x02\x00")
         gserver = gserver[1].split("\x00")
-        server = gserver[0]
+        server = gserver[0][1:]
         gsig = amfdata.split("sig\x02\x00\x16")
         gsig = gsig[1].split("\x00")
         sig = gsig[0]
