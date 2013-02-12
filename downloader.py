@@ -69,7 +69,8 @@ class Downloader:
         except:
             self.goDownload(onethr) #retry
         downurl = details['downurl']
-        if onethr:
+        if onethr or not self.pymaxe.pluginObj[selected].threaded_dnld:
+            print "FORCE SINGLE-THREADED DOWNLOADING"
             self.dthreads = 1
         chunks = self.chunk_sizes(self.size, self.dthreads)
         pos = 0

@@ -15,6 +15,7 @@ class Plugin:
         self.update = 'http://www.google.com'
         self.matchurls = ['youtube.com']
         self.quality = 'medium' # large, hd1080, hd720
+        self.threaded_dnld = True
 
     def search(self, query):
         res = []

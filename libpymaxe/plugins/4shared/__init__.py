@@ -11,7 +11,6 @@ class ResultItem:
         self.downurl = downurl
         self.size = size
 
-
 class Plugin:
     def __init__(self):
         self.pluginName = '4shared'
@@ -20,6 +19,7 @@ class Plugin:
         self.homepage = 'http://www.pymaxe.com'
         self.update = 'http://www.pymaxe.com'
         self.matchurls = ['4shared.com']
+        self.threaded_dnld = True
 
         self.email = 'c400618@rmqkr.net'
         self.password = '5a74d627d0454a09d24a092be0c9ee10'

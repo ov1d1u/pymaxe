@@ -15,6 +15,7 @@ class Plugin:
         self.homepage = 'http://www.google.ro'
         self.update = 'http://www.google.com'
         self.matchurls = ['trilulilu.ro']
+        self.threaded_dnld = True
 
     def search(self, query):
         res = []
