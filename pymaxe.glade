@@ -21,7 +21,7 @@
               <object class="GtkImage" id="image15">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">roxe.png</property>
+                <property name="pixbuf">roxe_martisor.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1634,7 +1634,7 @@ audio-volume-medium</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="xpad">5</property>
-                <property name="pixbuf">roxe.png</property>
+                <property name="pixbuf">roxe_martisor.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
