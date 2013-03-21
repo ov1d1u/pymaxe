@@ -52,7 +52,7 @@ class Plugin:
         req = urllib2.Request(url);
         getdata = urllib2.urlopen(req);
         data = getdata.read();
-        gjson = data.split('yt.playerConfig = ')
+        gjson = data.split('ytplayer.config = ')
         gjson = gjson[1].split('};')
         json_data = json.loads(gjson[0] + '}')
         timp = str(datetime.timedelta(seconds=json_data['args']['length_seconds']))[2:]
