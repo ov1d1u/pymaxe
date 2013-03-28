@@ -21,14 +21,14 @@ class Plugin:
         self.matchurls = ['4shared.com']
         self.threaded_dnld = True
 
-        self.email = 'c400618@rmqkr.net'
+        self.email = 'c228801@rmqkr.net'
         self.password = '5a74d627d0454a09d24a092be0c9ee10'
         self.streamurls = {}
 
     def search(self, query):
         self.streamurls = {}
         res = []
-        req = urllib2.Request('http://search.4shared.com/network/searchXml.jsp?login=' + self.email + '&password=!!!android2.0.2!!:md5:' + self.password + '&start=0&sortType=1&sortOrder=1&sortmode=0&searchmode=3&searchName=' + urllib.quote(query) + '.mp3')
+        req = urllib2.Request('http://search.4shared.com/network/searchXml.jsp?login=' + self.email + '&password=!!!android2.0.5!!:md5:' + self.password + '&start=10&sortType=5&sortOrder=1&sortmode=0&searchmode=3&searchName=' + urllib.quote(query) + '.mp3&searchDescription=&searchCategory=&searchExtention=&sizeCriteria=atleast&sizevalue=&origin=android2.0.5&pf=mp4')
         req.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
         getdata = urllib2.urlopen(req)
         data = getdata.read()

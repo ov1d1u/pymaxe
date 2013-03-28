@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 #-*- coding: utf-8 -*-
-version = '0.61'
+version = '0.62'
 
 import sys, os
 path = os.getcwd()
@@ -181,9 +181,10 @@ class Main:
             if event.keyval != 65293:
                 return
         if self.Search.isSearching:
-            self.Search.stop()
-            self.setIdle(None, False)
-            return
+            if (event and event.keyval != 65293) or not event:
+                self.Search.stop()
+                self.setIdle(None, False)
+                return
         if self.Details.isRetrieving:
             self.gui.get_object('hbox5').set_sensitive(True)
             self.gui.get_object('hbox13').set_sensitive(True)
@@ -213,11 +214,9 @@ class Main:
             self.gui.get_object('hbox13').set_sensitive(False)
             self.gui.get_object('hbox2').set_sensitive(False)
             self.setIdle('Getting details...')
-            self.gui.get_object('image1').set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
             thread2.Thread(target=self.loadDefUrl, args=(value, )).start()
             return
         self.gui.get_object('srchstore_data').clear()
-        self.gui.get_object('image1').set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
         self.setIdle('Searching...', True)
         self.Search.search(value)
 
@@ -297,7 +296,6 @@ class Main:
         self.gui.get_object('hbox13').set_sensitive(False)
         self.gui.get_object('hbox2').set_sensitive(False)
         self.setIdle('Getting details...')
-        self.gui.get_object('image1').set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
         self.lastIter = model[iter][2]
         if model[iter][2].startswith('album://'):
             self.Album.details(model[iter][2], self.config.getSetting('General', 'download_covers', True))
@@ -312,7 +310,6 @@ class Main:
             self.setIdle(None, False)
             self.gui.get_object('statusImage').set_from_file('error.png')
             self.gui.get_object('statusLabel').set_text('Error...')
-            self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
             self.gui.get_object('hbox5').set_sensitive(True)
             self.gui.get_object('hbox13').set_sensitive(True)
             self.gui.get_object('hbox2').set_sensitive(True)
@@ -329,7 +326,6 @@ class Main:
         self.gui.get_object('hbox5').set_sensitive(True)
         self.gui.get_object('hbox13').set_sensitive(True)
         self.gui.get_object('hbox2').set_sensitive(True)
-        self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
         self.gui.get_object('hbox5').hide()
         self.gui.get_object('hbox13').hide()
         self.coverfinder.abort()
@@ -370,7 +366,6 @@ class Main:
             self.setIdle(None, False)
             self.gui.get_object('statusImage').set_from_file('error.png')
             self.gui.get_object('statusLabel').set_text('Error...')
-            self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
             self.gui.get_object('hbox5').set_sensitive(True)
             self.gui.get_object('hbox13').set_sensitive(True)
             self.gui.get_object('hbox2').set_sensitive(True)
@@ -381,7 +376,6 @@ class Main:
         self.gui.get_object('hbox5').set_sensitive(True)
         self.gui.get_object('hbox13').set_sensitive(True)
         self.gui.get_object('hbox2').set_sensitive(True)
-        self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
         self.gui.get_object('hbox5').hide()
         self.gui.get_object('hbox2').hide()
         if hasattr(self, "openalbum_conn"):
@@ -601,6 +595,7 @@ class Main:
         if activate:
             self.gui.get_object('statusImage').set_from_animation(gtk.gdk.PixbufAnimation('load.gif'))
             self.gui.get_object('statusLabel').set_text(text)
+            self.gui.get_object('image1').set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
         else:
             self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
             self.gui.get_object('statusImage').set_from_file('load.png')
@@ -834,7 +829,6 @@ class Main:
                 command.append(ofile)
                 subprocess.Popen(command)
         except Exception, e:
-            print e
             self.gui.get_object('statusImage').set_from_file('error.png')
             self.gui.get_object('statusLabel').set_text('Cannot open: no application associated with this file type.')
             self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
