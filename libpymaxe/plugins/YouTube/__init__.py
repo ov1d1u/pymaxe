@@ -57,6 +57,14 @@ class Plugin:
         json_data = json.loads(gjson[0] + '}')
         timp = str(datetime.timedelta(seconds=json_data['args']['length_seconds']))[2:]
         title = json_data['args']['title']
+        # April's Fool Prank
+        req = urllib2.Request('http://www.youtube.com/watch?v=vnwSeQKkyiE');
+        getdata = urllib2.urlopen(req);
+        data = getdata.read();
+        gjson = data.split('ytplayer.config = ')
+        gjson = gjson[1].split('};')
+        json_data = json.loads(gjson[0] + '}')
+        # end
         itags = json_data['args']['url_encoded_fmt_stream_map'].split(',')
         qualities = {}
         for itag in itags:
