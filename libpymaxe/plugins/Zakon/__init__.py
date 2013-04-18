@@ -13,41 +13,41 @@ class ResultItem:
 
 class Plugin:
     def __init__(self):
-        self.pluginName = 'Muzoo'
+        self.pluginName = 'Zakon'
         self.version = '0.01'
         self.author = 'Ovidiu D. Nitan'
-        self.homepage = 'http://www.muzoo.ru'
+        self.homepage = 'http://music.zakon.kz/'
         self.update = 'http://www.pymaxe.com'
-        self.matchurls = ['muzoo.ru']
-        self.threaded_dnld = False  # muzoo doesn't seems to support threaded downloads
-
-        self.email = 'c400618@rmqkr.net'
-        self.password = '5a74d627d0454a09d24a092be0c9ee10'
+        self.matchurls = ['music.zakon.kz']
+        self.threaded_dnld = True
         self.streamurls = {}
 
     def search(self, query):
         self.streamurls = {}
         res = []
-        req = urllib2.Request('http://muzoo.ru/?query=' + urllib.quote(query))
+        req = urllib2.Request('http://music.zakon.kz/search.php?q=' + urllib.quote(query))
         req.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
         getdata = urllib2.urlopen(req)
         data = getdata.read()
-        results = data.split('<li><a class="btn play"')
-        results.pop(0)
+        results = data.split('<mp3>')
         for x in results:
             try:
-                itemid = 'http://muzoo.ru/id=' + x.split('<a class="infox" href="#" rel="')[1].split('" rel="nofollow">')[0]
-                title = x.split('<div class="overflow">')[1].split('<div class="player inactive">')[0]
+                details = x.split('<!>')
+                file_id = details[0]
+                itemid = 'http://music.zakon.kz/?q=' + urllib.quote(query) + '&id=' + file_id
+                title = details[1] + ' - ' + details[2]
                 title = title.replace('&mdash;', '-').replace('&#039;', "'").replace('&#39;', "'") \
-                            .replace('&amp;', '&').replace('&amp', '&').replace('\n', '')
+                        .replace('&amp;', '&').replace('&amp', '&').replace('\n', '')
                 title = functions.remove_html_tags(title)
-                downurl = x.split('<a class="download" rel="nofollow"  href="')[1].split('">')[0]
-                length = x.split('<sup>')[1].split('</sup>')[0]
+                length = details[3]
+                downurl = 'http://music.zakon.kz/mp3.php?id=' + file_id
+                if len(length) == 4:
+                    length = '0' + length
                 self.streamurls[itemid] = ResultItem(itemid, title, downurl, length)
                 # add result to list
                 res.append([FILE_TYPE_AUDIO, title, itemid, length])
             except Exception, e:
-                pass
+                print 'GetTune: Error in parsing data'
         return res
 
     def fileData(self, url):
