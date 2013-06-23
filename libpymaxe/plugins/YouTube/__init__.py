@@ -6,6 +6,7 @@ h = HTMLParser.HTMLParser()
 FILE_TYPE_AUDIO = 0x01
 FILE_TYPE_VIDEO = 0x02
 
+
 class Plugin:
     def __init__(self):
         self.pluginName = 'YouTube Downloader'
@@ -14,14 +15,14 @@ class Plugin:
         self.homepage = 'http://www.google.ro'
         self.update = 'http://www.google.com'
         self.matchurls = ['youtube.com']
-        self.quality = 'medium' # large, hd1080, hd720
+        self.quality = 'medium'  # large, hd1080, hd720
         self.threaded_dnld = True
 
     def search(self, query):
         res = []
-        req = urllib2.Request('http://gdata.youtube.com/feeds/api/videos?q=' + urllib.quote(query) + '&max-results=15');
-        getdata = urllib2.urlopen(req);
-        data = getdata.read();
+        req = urllib2.Request('http://gdata.youtube.com/feeds/api/videos?q=' + urllib.quote(query) + '&max-results=15')
+        getdata = urllib2.urlopen(req)
+        data = getdata.read()
         results = data.split('<entry>')
         results.pop(0)
         for x in results:
@@ -29,14 +30,14 @@ class Plugin:
                 gid = x.split('<id>')
                 gid = gid[1].split('</id>')
                 url = 'http://www.youtube.com/watch?v=' + os.path.basename(gid[0])
-                gtitle = x.split("<title type='text'>");
+                gtitle = x.split("<title type='text'>")
                 gtitle = gtitle[1].split('</title>')
                 title = urllib.unquote(gtitle[0])
-                gtime = x.split("duration='");
-                gtime = gtime[1].split("'");
+                gtime = x.split("duration='")
+                gtime = gtime[1].split("'")
                 timp = str(datetime.timedelta(seconds=int(gtime[0])))[2:]
                 res.append([FILE_TYPE_VIDEO, self.unescape(title), url, timp])
-            except Exception, e:
+            except:
                 pass
         return res
 
@@ -49,9 +50,9 @@ class Plugin:
         except:
             vcode = vcode
         url = 'http://www.youtube.com/watch?v=' + vcode
-        req = urllib2.Request(url);
-        getdata = urllib2.urlopen(req);
-        data = getdata.read();
+        req = urllib2.Request(url)
+        getdata = urllib2.urlopen(req)
+        data = getdata.read()
         gjson = data.split('ytplayer.config = ')
         gjson = gjson[1].split('};')
         json_data = json.loads(gjson[0] + '}')
@@ -70,7 +71,11 @@ class Plugin:
             if not itag_id in known_itags:
                 continue
 
-            itag_sig = itag.split('sig=')[1][:81]
+            if 'sig=' in itag:
+                itag_sig = itag.split('sig=')[1][:81]
+            else:
+                itag_sig = self._decrypt_signature(itag.split('s=')[1][:87])
+
             itag_url = urllib.unquote(itag.split('url=')[1].split('&')[0])
             if ',' in itag_url:
                 itag_url = itag_url.split(',')[0]
@@ -90,13 +95,13 @@ class Plugin:
         rq = urllib2.Request(downurl)
         gtdata = urllib2.urlopen(rq)
         contentlength = gtdata.info().getheader('Content-Length')
-        data = {"url" : url,
-                "title" : self.unescape(title),
-                "length" : timp,
-                "type" : FILE_TYPE_VIDEO,
-                "fsize" : contentlength,
-                "downurl" : downurl
-        }
+        data = {"url": url,
+                "title": self.unescape(title),
+                "length": timp,
+                "type": FILE_TYPE_VIDEO,
+                "fsize": contentlength,
+                "downurl": downurl
+                }
         return data
 
     def select_quality(self, qualities):
@@ -114,3 +119,14 @@ class Plugin:
         # this has to be last:
         s = s.replace("&amp;", "&")
         return s
+
+    def _decrypt_signature(self, s):
+        """Decrypt the key the two subkeys must have a length of 43"""
+        """Source: youtube-dl project"""
+        (a, b) = s.split('.')
+        if len(a) != 43 or len(b) != 43:
+            raise ValueError(u'Unable to decrypt signature, subkeys lengths not valid')
+        b = ''.join([b[:8], a[0], b[9:18], b[-4], b[19:39], b[18]])[0:40]
+        a = a[-40:]
+        s_dec = '.'.join((a, b))[::-1]
+        return s_dec

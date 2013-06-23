@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 #-*- coding: utf-8 -*-
-version = '0.62'
+version = '0.63'
 
 import sys, os
 path = os.getcwd()
