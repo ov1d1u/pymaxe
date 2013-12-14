@@ -863,7 +863,7 @@ class Main:
                 command = tools.getOpenWith(ext)
                 command.append(ofile)
                 subprocess.Popen(command)
-        except Exception, e:
+        except Exception:
             self.gui.get_object('statusImage').set_from_file('error.png')
             self.gui.get_object('statusLabel').set_text('Cannot open: no application associated with this file type.')
             self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
@@ -981,7 +981,8 @@ class Main:
         elif int(tip) == VIDEO_FILE:
             ext = '.avi'
         fchooser = gtk.FileChooserDialog(title='Save as...',
-                action=gtk.FILE_CHOOSER_ACTION_SAVE, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
+                                         action=gtk.FILE_CHOOSER_ACTION_SAVE,
+                                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
         fchooser.set_local_only(True)
         if osystem == 'WIN':
             fchooser.set_current_name(tools.strip_win32_incompat(titlu + ext))
