@@ -1,5 +1,8 @@
 #-*- coding: utf-8 -*-
-import thread2, gobject, albumsearch
+import thread2
+import gobject
+import albumsearch
+
 
 class PymaxeSearch:
     def __init__(self, pymaxe, callback):
@@ -8,7 +11,7 @@ class PymaxeSearch:
         self.isSearching = False
         self.albumsearch = albumsearch.AlbumSearch(self.callback)
 
-    def search(self, string, albums = True):
+    def search(self, string, albums=True):
         self.thread = {}
         plugins = self.pymaxe.activePlugins
         for x in plugins:
@@ -30,7 +33,8 @@ class PymaxeSearch:
                 data = self.pymaxe.search(string, plugin)
                 if retry > 2:
                     break
-        if not data: return
+        if not data:
+            return
         for x in data:
             gobject.idle_add(self.callback, data[x])
         self.thread.pop(x)

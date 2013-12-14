@@ -24,7 +24,7 @@ class AlbumSearch:
             name = name.replace('&amp;', '&')
             aid = self.extract(albumdata, '<mbid>', '</mbid>')
             if aid != '':
-                ret.append([0x03, artist + ' - ' + name, 'album://'+aid, ''])
+                ret.append([0x03, artist + ' - ' + name, 'album://'+aid, '', False])
         return {"AlbumSearch" : ret}
 
     def extract(self, string, start, end):

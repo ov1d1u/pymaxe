@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-import HTMLParser, urllib2, urllib, datetime, os
+import HTMLParser
+import urllib2
+import urllib
+import datetime
+import os
 import json
 h = HTMLParser.HTMLParser()
 
@@ -36,7 +40,7 @@ class Plugin:
                 gtime = x.split("duration='")
                 gtime = gtime[1].split("'")
                 timp = str(datetime.timedelta(seconds=int(gtime[0])))[2:]
-                res.append([FILE_TYPE_VIDEO, self.unescape(title), url, timp])
+                res.append([FILE_TYPE_VIDEO, self.unescape(title), url, timp, False])
             except:
                 pass
         return res
@@ -100,8 +104,8 @@ class Plugin:
                 "length": timp,
                 "type": FILE_TYPE_VIDEO,
                 "fsize": contentlength,
-                "downurl": downurl
-                }
+                "downurl": downurl,
+                "hiquality": False}
         return data
 
     def select_quality(self, qualities):
@@ -143,6 +147,6 @@ class Plugin:
             return s[36] + s[79:67:-1] + s[81] + s[66:40:-1] + s[33] + s[39:36:-1] + s[40] + s[35] + s[0] + s[67] + s[32:0:-1] + s[34]
         elif len(s) == 81:
             return s[6] + s[3:6] + s[33] + s[7:24] + s[0] + s[25:33] + s[2] + s[34:53] + s[24] + s[54:81]
-        
+
         else:
             raise ValueError("Unable to decrypt signature, key length %d not supported; retrying might work" % (len(s)))

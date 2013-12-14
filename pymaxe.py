@@ -19,6 +19,7 @@ else:
 import thread2, subprocess, webbrowser, socket, urllib, gtk, gobject, pango, configure, random, time, datetime, glib
 import tools, searcher, details, coverFinder, mediaPlayer, errorManager
 import settingsManager, downloader, album, albumDownloader, eyeD3, lyrics
+import suggest
 from tools import label_set_autowrap
 from dateutil import parser as timeparser
 import libpymaxe
@@ -37,6 +38,7 @@ VIDEO_FILE = 0x02
 AUDIO_FILE_ICON = gtk.gdk.pixbuf_new_from_file('audio-x-wav.png')
 VIDEO_FILE_ICON = gtk.gdk.pixbuf_new_from_file('video-x-generic.png')
 ALBUM_FILE_ICON = gtk.gdk.pixbuf_new_from_file('tools-rip-audio-cd.png')
+HIQUALITY_ICON = gtk.gdk.pixbuf_new_from_file('hq.png')
 
 if osystem == 'WIN':
     if not '--debug' in sys.argv:
@@ -44,6 +46,7 @@ if osystem == 'WIN':
         sys.stderr = open(userpath + '/pymaxe.log', 'w')
 
 gtk.gdk.threads_init()
+
 
 class Main:
     def __init__(self):
@@ -55,39 +58,38 @@ class Main:
         self.gui.get_object('treemodelfilter1').set_modify_func(['GdkPixbuf', str, str, str], self.modify_func)
         self.gui.get_object('statusImage').set_from_file('load.png')
         self.gui.connect_signals({
-                "on_mainw_destroy_event" : self.quit,
-                "showAbout" : self.showAbout,
-                "hideAbout" : self.hideAbout,
-                "doSearch" : self.doSearch,
-                "changeFilter" : self.changeFilter,
-                "selectSong" : self.selectSong,
-                "playSong" : self.playSong,
-                "stopSong" : self.stopSong,
-                "changeVolume" : self.changeVolume,
-                "seekSong" : self.seekSong,
-                "openSourcePage" : self.openSourcePage,
-                "openWithPlayer" : self.openWithPlayer,
-                "showSettings" : self.showSettings,
-                "donate" : self.donate,
-                "fblike" : self.fblike,
-                "facebook" : self.facebook,
-                "cursorPointer" : self.cursorPointer,
-                "cursorNormal" : self.cursorNormal,
-                "hoverfb" : self.hoverfb,
-                "unhoverfb" : self.unhoverfb,
-                "downloadThis" : self.downloadThis,
-                "hideFileChooser" : self.hideFileChooser,
-                "addDownload" : self.addDownload,
-                "updateSaveAs" : self.updateSaveAs,
-                "selectDownload" : self.selectDownload,
-                "openDownload" : self.openDownload,
-                "stopRemoveDownload" : self.stopRemoveDownload,
-                "showDebug" : self.showDebug,
-                "draw_background" : self.draw_background,
-                "changeTab" : self.changeTab,
-                "switchFullscreen" : self.switchFullscreen,
-                "copyWebpageURL" : self.copyWebpageURL
-                })
+            "on_mainw_destroy_event": self.quit,
+            "showAbout": self.showAbout,
+            "hideAbout": self.hideAbout,
+            "doSearch": self.doSearch,
+            "changeFilter": self.changeFilter,
+            "selectSong": self.selectSong,
+            "playSong": self.playSong,
+            "stopSong": self.stopSong,
+            "changeVolume": self.changeVolume,
+            "seekSong": self.seekSong,
+            "openSourcePage": self.openSourcePage,
+            "openWithPlayer": self.openWithPlayer,
+            "showSettings": self.showSettings,
+            "donate": self.donate,
+            "fblike": self.fblike,
+            "facebook": self.facebook,
+            "cursorPointer": self.cursorPointer,
+            "cursorNormal": self.cursorNormal,
+            "hoverfb": self.hoverfb,
+            "unhoverfb": self.unhoverfb,
+            "downloadThis": self.downloadThis,
+            "hideFileChooser": self.hideFileChooser,
+            "addDownload": self.addDownload,
+            "updateSaveAs": self.updateSaveAs,
+            "selectDownload": self.selectDownload,
+            "openDownload": self.openDownload,
+            "stopRemoveDownload": self.stopRemoveDownload,
+            "showDebug": self.showDebug,
+            "draw_background": self.draw_background,
+            "changeTab": self.changeTab,
+            "switchFullscreen": self.switchFullscreen,
+            "copyWebpageURL": self.copyWebpageURL})
         self.gui.get_object('eventbox4').realize()
         self.gui.get_object('eventbox4').modify_bg(gtk.STATE_NORMAL, self.gui.get_object('eventbox4').get_colormap().alloc_color("black"))
         if osystem == 'WIN':
@@ -111,6 +113,7 @@ class Main:
         self.downloadUpdater = None
         self.versuri = None
         self.isFullscreen = False
+        self.sugsTimeout = None
         self.lastClick = 0      # for detecting double-click in Windows
         self.downloaders = {}
         self.lyricDownloads = {}
@@ -125,7 +128,7 @@ class Main:
             self.gui.get_object('frame1').set_sensitive(False)
         if osystem == 'WIN':
             self.gui.get_object('frame1').set_shadow_type(gtk.SHADOW_ETCHED_IN)
-            if not os.path.exists('libvlc.dll'):    ### No VLC - maybe old version?
+            if not os.path.exists('libvlc.dll'):  # No VLC - maybe old version?
                 self.gui.get_object('eventbox5').modify_bg(gtk.STATE_NORMAL, self.gui.get_object('eventbox5').get_colormap().alloc_color("yellow"))
                 self.gui.get_object('eventbox5').connect('button-press-event', lambda obj, event: webbrowser.open('http://pymaxe.com/index.php/downloads') and self.quit(None))
                 self.gui.get_object('updateBox').show()
@@ -139,6 +142,12 @@ class Main:
         self.gui.get_object('cellrenderertext6').props.width = self.gui.get_object('treeviewcolumn6').get_width()
         self.gui.get_object('cellrendererprogress1').props.width = 150
         self.notifyOpened()
+
+        self.completion = gtk.EntryCompletion()
+        self.completionList = gtk.ListStore(str)
+        self.gui.get_object('entry1').set_completion(self.completion)
+        self.completion.set_model(self.completionList)
+        self.completion.set_text_column(0)
 
         gtk.gdk.threads_enter()
         gtk.main()
@@ -176,9 +185,25 @@ class Main:
         liststore.append(['PSP Video', '-i INPUT -b 300 -s 320x240 -vcodec libxvid -strict experimental -ab 32 -ar 24000 -acodec aac OUTPUT', '.mp4'])
         liststore.append(['DVD-Compatible', '-i INPUT -target pal-dvd -ps 2000000000 -aspect 16:9 OUTPUT', '.mpeg'])
 
+    def addSugestions(self, suggestions):
+        for suggestion in suggestions:
+            self.completionList.append([suggestion])
+        self.gui.get_object('entry1').get_completion().complete()
+        gobject.source_remove(self.sugsTimeout)
+
     def doSearch(self, obj, event=None):
         if event:
+            if event.keyval == 65364 or event.keyval == 65362:
+                return
+
             if event.keyval != 65293:
+                if len(self.gui.get_object('entry1').get_text()) > 2:
+                    if self.sugsTimeout:
+                        gobject.source_remove(self.sugsTimeout)
+                    self.completionList.clear()
+                    if self.config.getSetting('General', 'showsuggestions', True):
+                        self.completionList.append([self.gui.get_object('entry1').get_text()])
+                        self.sugsTimeout = gobject.timeout_add(500, suggest.suggestionsFor, self.gui.get_object('entry1').get_text(), self.addSugestions)
                 return
         if self.Search.isSearching:
             if (event and event.keyval != 65293) or not event:
@@ -233,13 +258,17 @@ class Main:
             icon = VIDEO_FILE_ICON
         elif data['type'] == 0x03:
             icon = ALBUM_FILE_ICON
-        iter = model.append([icon, data['title'], data['url'], data['length'], data['type']])
+        if data['hiquality']:
+            hiqicon = HIQUALITY_ICON
+        else:
+            hiqicon = gtk.gdk.gdk_pixbuf_new()
+        iter = model.append([icon, data['title'], data['url'], data['length'], data['type'], hiqicon])
         path = model.get_path(iter)
         self.gui.get_object('treeview1').set_cursor(path)
         self.selectSong(None)
 
     def populateResults(self, data):
-        if data == None:
+        if data is None:
             self.gui.get_object('image1').set_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_MENU)
             if not self.Details.isRetrieving and not self.Album.isRetrieving:
                 self.setIdle(None, False)
@@ -252,7 +281,13 @@ class Main:
                 icon = VIDEO_FILE_ICON
             elif x[0] == 0x03:
                 icon = ALBUM_FILE_ICON
-            liststore.append([icon, x[1], x[2], x[3], x[0]])
+
+            if x[4]:
+                hiqicon = HIQUALITY_ICON
+            else:
+                hiqicon = gtk.Image().get_pixbuf()
+
+            liststore.append([icon, x[1], x[2], x[3], x[0], hiqicon])
 
     def selectSong(self, data, event=None):
         if event:
@@ -315,7 +350,7 @@ class Main:
             self.gui.get_object('hbox2').set_sensitive(True)
             return
         if not data['url'] in model[iter][2]:
-            print 'URL Mismatch'
+            print 'URL Mismatch: {0}'.format(data['url'])
             return
         if not 'WMPlayer' in str(self.mp.backend):
             if data['type'] == VIDEO_FILE:

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2
-import functions, HTMLParser
-import calendar, time
+import urllib
+import urllib2
+import functions
+import HTMLParser
+import calendar
+import time
 h = HTMLParser.HTMLParser()
 
 FILE_TYPE_AUDIO = 0x01
 FILE_TYPE_VIDEO = 0x02
+
 
 class Plugin:
     def __init__(self):
@@ -27,7 +31,6 @@ class Plugin:
         results.pop(0)
         for x in results:
             try:
-                import time
                 gurl = x.split('<span class="title"><a href="')
                 gurl = gurl[1].split('">')
                 url = gurl[0]
@@ -37,12 +40,12 @@ class Plugin:
                 title = title.replace('&amp;', '&')
                 title = functions.remove_html_tags(title)
                 gtime = x.split('<span class="duration">')
-                gtime = gtime[1].split('</span>');
+                gtime = gtime[1].split('</span>')
                 timp = gtime[0]
                 if len(timp) == 4:
                     timp = '0' + timp
-                res.append([FILE_TYPE_AUDIO, title, url, timp])
-            except Exception, e:
+                res.append([FILE_TYPE_AUDIO, title, url, timp, False])
+            except Exception:
                 pass
         return res
 
@@ -85,7 +88,7 @@ class Plugin:
         timp = times.split(", ")
         timp = timp[1]
         timp = timp[:-4]
-        months = {"Jan" : "01", "Feb" : "02", "Mar" : "03", "Apr" : "04", "May" : "05", "Jun" : "06", "Jul" : "07", "Aug" : "08", "Sep" : "09", "Oct" : "10", "Nov" : "11", "Dec" : "12"}
+        months = {"Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", "May": "05", "Jun": "06", "Jul": "07", "Aug": "08", "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"}
         timp = timp.split()
         unixtime = int(calendar.timegm(time.strptime(timp[0] + " " + months[timp[1]] + " " + timp[2] + " " + timp[3], "%d %m %Y %H:%M:%S")))
         exp = unixtime + 60
@@ -103,11 +106,11 @@ class Plugin:
         if contentlength == '0':
             self.fileData(url)
         durata = 'N/A'
-        data = {"url" : url,
-                "title" : titlu,
-                "length" : durata,
-                "type" : FILE_TYPE_AUDIO,
-                "fsize" : contentlength,
-                "downurl" : downurl
-        }
+        data = {"url": url,
+                "title": titlu,
+                "length": durata,
+                "type": FILE_TYPE_AUDIO,
+                "fsize": contentlength,
+                "downurl": downurl,
+                "hiquality": False}
         return data

@@ -71,7 +71,6 @@
                         <child>
                           <object class="GtkCheckButton" id="checkbutton1">
                             <property name="label" translatable="yes">Download covers from internet</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -86,7 +85,6 @@
                         <child>
                           <object class="GtkCheckButton" id="checkbutton7">
                             <property name="label" translatable="yes">Download lyrics from internet</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -101,7 +99,6 @@
                         <child>
                           <object class="GtkCheckButton" id="checkbutton2">
                             <property name="label" translatable="yes">Auto-update application when new versions are available</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -154,7 +151,6 @@
                         <child>
                           <object class="GtkCheckButton" id="checkbutton3">
                             <property name="label" translatable="yes">Automatically open downloaded files</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -169,7 +165,6 @@
                         <child>
                           <object class="GtkCheckButton" id="checkbutton4">
                             <property name="label" translatable="yes">Download HD quality videos (if available)</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -179,6 +174,20 @@
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="checkbutton8">
+                            <property name="label" translatable="yes">Show search suggestions</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">6</property>
                           </packing>
                         </child>
                       </object>
@@ -362,7 +371,6 @@
                                             <child>
                                               <object class="GtkCheckButton" id="checkbutton6">
                                                 <property name="label" translatable="yes">Use multi-threaded downloader (download files faster)</property>
-                                                <property name="use_action_appearance">False</property>
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
@@ -568,7 +576,6 @@
                                             <child>
                                               <object class="GtkCheckButton" id="checkbutton5">
                                                 <property name="label" translatable="yes">Show a preview window when previewing video files (restart required)</property>
-                                                <property name="use_action_appearance">False</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="draw_indicator">True</property>
@@ -644,7 +651,6 @@
                     <child>
                       <object class="GtkButton" id="button8">
                         <property name="label" translatable="yes">Close</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>

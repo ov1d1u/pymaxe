@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os, sys
+import os
+import sys
 import extras
 
 FILE_TYPE_AUDIO = 0x01
@@ -8,9 +9,10 @@ FILE_TYPE_VIDEO = 0x02
 
 DEBUG = 1
 
+
 class Pymaxe:
     def __init__(self):
-        self.version = 0.99
+        self.version = 1.00
         self.currentPath = os.path.dirname(os.path.realpath(__file__))
         self.pluginDirs = []
         self.setPluginsDir(self.currentPath + '/plugins')
@@ -65,11 +67,11 @@ class Pymaxe:
                 pluginAuthor = self.pluginObj[name].author
                 pluginHomepage = self.pluginObj[name].homepage
                 pluginUpdate = self.pluginObj[name].update
-                data = {'name' : pluginName,
-                        'version' : pluginVersion,
-                        'author' : pluginAuthor,
-                        'homepage' : pluginHomepage,
-                        'update' : pluginUpdate}
+                data = {'name': pluginName,
+                        'version': pluginVersion,
+                        'author': pluginAuthor,
+                        'homepage': pluginHomepage,
+                        'update': pluginUpdate}
                 return data
             except:
                 if DEBUG:
@@ -111,6 +113,6 @@ class Pymaxe:
 
     def getPluginObj(self, plugin):
         if plugin in self.activePlugins:
-            return 're';#self.pluginObj[plugin]
+            return 're'  # self.pluginObj[plugin]
         else:
             return False

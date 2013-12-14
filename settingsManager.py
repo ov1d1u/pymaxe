@@ -1,5 +1,6 @@
 import sys, os, gtk, gobject, tools
 
+
 class settingsManager:
     def __init__(self, roxe, pymaxe, configure):
         self.roxe = roxe
@@ -8,11 +9,10 @@ class settingsManager:
         self.gui = gtk.Builder()
         self.gui.add_from_file('settings.glade')
         self.gui.connect_signals({
-                "hideSettings" : self.hideSettings,
-                "togglePlugin" : self.togglePlugin,
-                "showHidePreview" : self.showHidePreview,
-                "showThreadsOptions" : self.showThreadsOptions
-                })
+            "hideSettings": self.hideSettings,
+            "togglePlugin": self.togglePlugin,
+            "showHidePreview": self.showHidePreview,
+            "showThreadsOptions": self.showThreadsOptions})
         tools.label_set_autowrap(self.gui.get_object('label1'))
 
     def displayWindow(self, show=True):
@@ -22,6 +22,7 @@ class settingsManager:
         self.gui.get_object('checkbutton3').set_active(self.config.getSetting('General', 'opendownloaded', False))
         self.gui.get_object('checkbutton4').set_active(self.config.getSetting('General', 'downloadhd', True))
         self.gui.get_object('checkbutton6').set_active(self.config.getSetting('General', 'threadeddownload', True))
+        self.gui.get_object('checkbutton8').set_active(self.config.getSetting('General', 'showsuggestions', True))
         self.gui.get_object('filechooserbutton1').set_filename(self.config.getSetting('General', 'download_into_default', self.config.guessDownloadFolder()))
         if os.environ.get("APPDATA"):
             self.gui.get_object('filechooserbutton2').set_filename(self.config.getSetting('General', 'pymaxe_plugins_folder', 'C:\\'))
@@ -94,6 +95,7 @@ class settingsManager:
         self.config.setSetting('General', 'opendownloaded', self.gui.get_object('checkbutton3').get_active())
         self.config.setSetting('General', 'downloadhd', self.gui.get_object('checkbutton4').get_active())
         self.config.setSetting('General', 'threadeddownload', self.gui.get_object('checkbutton6').get_active())
+        self.config.setSetting('General', 'showsuggestions', self.gui.get_object('checkbutton8').get_active())
         self.config.setSetting('General', 'downloadthreads', self.gui.get_object('spinbutton1').get_value())
         self.config.setSetting('General', 'download_into_default', self.gui.get_object('filechooserbutton1').get_filename())
         self.config.setSetting('General', 'pymaxe_plugins_folder', self.gui.get_object('filechooserbutton2').get_filename())

@@ -1,8 +1,10 @@
-import urllib, urllib2
+import urllib
+import urllib2
 import functions
 
 FILE_TYPE_AUDIO = 0x01
 FILE_TYPE_VIDEO = 0x02
+
 
 class ResultItem:
     def __init__(self, url, title, downurl, size):
@@ -10,6 +12,7 @@ class ResultItem:
         self.title = title
         self.downurl = downurl
         self.size = size
+
 
 class Plugin:
     def __init__(self):
@@ -50,19 +53,18 @@ class Plugin:
                     downurl = x.split('<flash-preview-url>')[1].split('</flash-preview-url>')[0]
                     self.streamurls[url] = ResultItem(url, title, downurl, size)
                     # add result to list
-                    res.append([FILE_TYPE_AUDIO, title, url, ''])
-            except Exception, e:
+                    res.append([FILE_TYPE_AUDIO, title, url, '', False])
+            except Exception:
                 pass
         return res
 
     def fileData(self, url):
         item = self.streamurls[url]
-        data = {"url" : url,
-                "title" : item.title,
-                "length" : 'N/A',
-                "type" : FILE_TYPE_AUDIO,
-                "fsize" : item.size,
-                "downurl" : item.downurl
-        }
+        data = {"url": url,
+                "title": item.title,
+                "length": 'N/A',
+                "type": FILE_TYPE_AUDIO,
+                "fsize": item.size,
+                "downurl": item.downurl,
+                "hiquality": False}
         return data
-

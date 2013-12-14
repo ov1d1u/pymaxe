@@ -492,6 +492,7 @@ and others...</property>
                         <property name="has_default">True</property>
                         <property name="receives_default">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="caps_lock_warning">False</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
@@ -568,6 +569,12 @@ and others...</property>
                               <object class="GtkCellRendererText" id="cellrenderertext1"/>
                               <attributes>
                                 <attribute name="text">1</attribute>
+                              </attributes>
+                            </child>
+                            <child>
+                              <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf3"/>
+                              <attributes>
+                                <attribute name="pixbuf">5</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -1817,6 +1824,8 @@ Please note that Pymaxe Music Downloader is a voluntary project. It takes time t
       <column type="gchararray"/>
       <!-- column-name TYPE -->
       <column type="gint"/>
+      <!-- column-name IMAGE -->
+      <column type="GdkPixbuf"/>
     </columns>
   </object>
   <object class="GtkTreeModelFilter" id="treemodelfilter1">
