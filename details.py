@@ -15,7 +15,7 @@ class Details:
         self.thread = thread2.Thread(target=self.downloadData, args=(url, ))
         self.thread.start()
 
-    def downloadData(self, url, callback = None):
+    def downloadData(self, url, callback=None):
         self.isRetrieving = True
         selected = None
         for x in self.pymaxe.activePlugins:

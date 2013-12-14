@@ -10,7 +10,7 @@ FILE_TYPE_VIDEO = 0x02
 class Plugin:
     def __init__(self):
         self.pluginName = 'YouTube Downloader'
-        self.version = '0.991'
+        self.version = '1.0beta'
         self.author = 'Ovidiu D. Niţan'
         self.homepage = 'http://www.google.ro'
         self.update = 'http://www.google.com'
@@ -74,7 +74,7 @@ class Plugin:
             if 'sig=' in itag:
                 itag_sig = itag.split('sig=')[1][:81]
             else:
-                itag_sig = self._decrypt_signature(itag.split('s=')[1][:87])
+                itag_sig = self._decrypt_signature(itag.split('s=')[1].split('&')[0])
 
             itag_url = urllib.unquote(itag.split('url=')[1].split('&')[0])
             if ',' in itag_url:
@@ -123,10 +123,26 @@ class Plugin:
     def _decrypt_signature(self, s):
         """Decrypt the key the two subkeys must have a length of 43"""
         """Source: youtube-dl project"""
-        (a, b) = s.split('.')
-        if len(a) != 43 or len(b) != 43:
-            raise ValueError(u'Unable to decrypt signature, subkeys lengths not valid')
-        b = ''.join([b[:8], a[0], b[9:18], b[-4], b[19:39], b[18]])[0:40]
-        a = a[-40:]
-        s_dec = '.'.join((a, b))[::-1]
-        return s_dec
+        if len(s) == 92:
+            return s[25] + s[3:25] + s[0] + s[26:42] + s[79] + s[43:79] + s[91] + s[80:83]
+        elif len(s) == 90:
+            return s[25] + s[3:25] + s[2] + s[26:40] + s[77] + s[41:77] + s[89] + s[78:81]
+        elif len(s) == 88:
+            return s[48] + s[81:67:-1] + s[82] + s[66:62:-1] + s[85] + s[61:48:-1] + s[67] + s[47:12:-1] + s[3] + s[11:3:-1] + s[2] + s[12]
+        elif len(s) == 87:
+            return s[62] + s[82:62:-1] + s[83] + s[61:52:-1] + s[0] + s[51:2:-1]
+        elif len(s) == 86:
+            return s[2:63] + s[82] + s[64:82] + s[63]
+        elif len(s) == 85:
+            return s[2:8] + s[0] + s[9:21] + s[65] + s[22:65] + s[84] + s[66:82] + s[21]
+        elif len(s) == 84:
+            return s[83:36:-1] + s[2] + s[35:26:-1] + s[3] + s[25:3:-1] + s[26]
+        elif len(s) == 83:
+            return s[6] + s[3:6] + s[33] + s[7:24] + s[0] + s[25:33] + s[53] + s[34:53] + s[24] + s[54:]
+        elif len(s) == 82:
+            return s[36] + s[79:67:-1] + s[81] + s[66:40:-1] + s[33] + s[39:36:-1] + s[40] + s[35] + s[0] + s[67] + s[32:0:-1] + s[34]
+        elif len(s) == 81:
+            return s[6] + s[3:6] + s[33] + s[7:24] + s[0] + s[25:33] + s[2] + s[34:53] + s[24] + s[54:81]
+        
+        else:
+            raise ValueError("Unable to decrypt signature, key length %d not supported; retrying might work" % (len(s)))
