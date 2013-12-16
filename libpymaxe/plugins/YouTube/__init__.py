@@ -30,13 +30,13 @@ class Plugin:
         data = json.loads(getdata.read())
         results = data['feed']['entry']
         for entry in results:
-            #try:
+            try:
                 url = entry['link'][0]['href']
                 title = entry['title']['$t']
                 duration = str(datetime.timedelta(seconds=int(entry['media$group']['media$content'][0]['duration'])))[2:]
                 res.append([FILE_TYPE_VIDEO, self.unescape(title), url, duration, False])
-            #except:
-            #    pass
+            except:
+                pass
         return res
 
     def fileData(self, url):
