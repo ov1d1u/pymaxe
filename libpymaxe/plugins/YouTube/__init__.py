@@ -24,25 +24,19 @@ class Plugin:
 
     def search(self, query):
         res = []
-        req = urllib2.Request('http://gdata.youtube.com/feeds/api/videos?q=' + urllib.quote(query) + '&max-results=15')
+        print 'http://gdata.youtube.com/feeds/api/videos?q=' + urllib.quote(query) + '&alt=json'
+        req = urllib2.Request('http://gdata.youtube.com/feeds/api/videos?q=' + urllib.quote(query) + '&alt=json')
         getdata = urllib2.urlopen(req)
-        data = getdata.read()
-        results = data.split('<entry>')
-        results.pop(0)
-        for x in results:
-            try:
-                gid = x.split('<id>')
-                gid = gid[1].split('</id>')
-                url = 'http://www.youtube.com/watch?v=' + os.path.basename(gid[0])
-                gtitle = x.split("<title type='text'>")
-                gtitle = gtitle[1].split('</title>')
-                title = urllib.unquote(gtitle[0])
-                gtime = x.split("duration='")
-                gtime = gtime[1].split("'")
-                timp = str(datetime.timedelta(seconds=int(gtime[0])))[2:]
-                res.append([FILE_TYPE_VIDEO, self.unescape(title), url, timp, False])
-            except:
-                pass
+        data = json.loads(getdata.read())
+        results = data['feed']['entry']
+        for entry in results:
+            #try:
+                url = entry['link'][0]['href']
+                title = entry['title']['$t']
+                duration = str(datetime.timedelta(seconds=int(entry['media$group']['media$content'][0]['duration'])))[2:]
+                res.append([FILE_TYPE_VIDEO, self.unescape(title), url, duration, False])
+            #except:
+            #    pass
         return res
 
     def fileData(self, url):
