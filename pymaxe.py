@@ -261,7 +261,7 @@ class Main:
         if data['hiquality']:
             hiqicon = HIQUALITY_ICON
         else:
-            hiqicon = gtk.gdk.gdk_pixbuf_new()
+            hiqicon = gtk.Image().get_pixbuf()
         iter = model.append([icon, data['title'], data['url'], data['length'], data['type'], hiqicon])
         path = model.get_path(iter)
         self.gui.get_object('treeview1').set_cursor(path)

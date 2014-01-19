@@ -11,14 +11,18 @@ API_KEY = 'GC6OGUMVC4BYZUBY7'
 def searchArtist(query, callback):
     artists = []
     url = 'http://developer.echonest.com/api/v4/artist/search?api_key={0}&name={1}'.format(API_KEY, urllib.quote_plus(query))
-    f = urllib2.urlopen(url)
-    data = json.loads(f.read())
-    if 'response' in data:
-        response = data['response']
-        for artist in response['artists']:
-            artists.append(artist['name'])
+    try:
+        f = urllib2.urlopen(url)
+        data = json.loads(f.read())
+        if 'response' in data:
+            response = data['response']
+            for artist in response['artists']:
+                artists.append(artist['name'])
 
-    threading.Thread(target=searchTitles, args=(query, artists, callback)).start()
+        threading.Thread(target=searchTitles, args=(query, artists, callback)).start()
+    except:
+        print 'Error while requesting suggestions'
+        pass
 
 
 def searchTitles(query, artists, callback):

@@ -58,6 +58,8 @@ class Plugin:
                 gduration = r.split('Duration: ')
                 gduration = gduration[1].split(' &ndash;')
                 duration = gduration[0]
+                if len(duration) == 4:
+                    duration = '0{0}'.format(duration)
 
                 resultItem = ResultItem(url, title, url, duration, size)
 
