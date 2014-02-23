@@ -74,7 +74,6 @@ class Plugin:
             if s.vidformat != 'video/webm':
                 qdict[s.itag] = s.url
 
-        print self.quality
         if self.quality == 'hd1080' or self.quality == 'hd720':
             if '22' in qdict:
                 return qdict['22']
