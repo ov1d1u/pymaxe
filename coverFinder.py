@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 import thread2, gobject, urllib, urllib2, cStringIO
-from PIL import Image
+import Image
 
 class coverFinder:
     def __init__(self, pymaxe, callback):

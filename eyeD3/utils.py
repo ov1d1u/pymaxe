@@ -20,81 +20,81 @@
 from eyeD3 import *;
 
 def versionsToConstant(v):
-    major = v[0];
-    minor = v[1];
-    rev = v[2];
-    if major == 1:
-        if minor == 0:
-            return ID3_V1_0;
-        elif minor == 1:
-            return ID3_V1_1;
-    elif major == 2:
-        if minor == 2:
-            return ID3_V2_2;
-        if minor == 3:
-            return ID3_V2_3;
-        elif minor == 4:
-            return ID3_V2_4;
-    raise str("Invalid ID3 version: %s" % str(v));
+   major = v[0];
+   minor = v[1];
+   rev = v[2];
+   if major == 1:
+      if minor == 0:
+         return ID3_V1_0;
+      elif minor == 1:
+         return ID3_V1_1;
+   elif major == 2:
+      if minor == 2:
+         return ID3_V2_2;
+      if minor == 3:
+         return ID3_V2_3;
+      elif minor == 4:
+         return ID3_V2_4;
+   raise str("Invalid ID3 version: %s" % str(v));
 
 def versionToString(v):
-    if v & ID3_V1:
-        if v == ID3_V1_0:
-            return "v1.0";
-        elif v == ID3_V1_1:
-            return "v1.1";
-        elif v == ID3_V1:
-            return "v1.x";
-    elif v & ID3_V2:
-        if v == ID3_V2_2:
-            return "v2.2";
-        elif v == ID3_V2_3:
-            return "v2.3";
-        elif v == ID3_V2_4:
-            return "v2.4";
-        elif v == ID3_V2:
-            return "v2.x";
+   if v & ID3_V1:
+      if v == ID3_V1_0:
+         return "v1.0";
+      elif v == ID3_V1_1:
+         return "v1.1";
+      elif v == ID3_V1:
+         return "v1.x";
+   elif v & ID3_V2:
+      if v == ID3_V2_2:
+         return "v2.2";
+      elif v == ID3_V2_3:
+         return "v2.3";
+      elif v == ID3_V2_4:
+         return "v2.4";
+      elif v == ID3_V2:
+         return "v2.x";
 
-    if v == ID3_ANY_VERSION:
-        return "v1.x/v2.x";
-    raise str("versionToString - Invalid ID3 version constant: %s" % hex(v));
+   if v == ID3_ANY_VERSION:
+      return "v1.x/v2.x";
+   raise str("versionToString - Invalid ID3 version constant: %s" % hex(v));
 
 def constantToVersions(v):
-    if v & ID3_V1:
-        if v == ID3_V1_0:
-            return [1, 0, 0];
-        elif v == ID3_V1_1:
-            return [1, 1, 0];
-        elif v == ID3_V1:
-            return [1, 1, 0];
-    elif v & ID3_V2:
-        if v == ID3_V2_2:
-            return [2, 2, 0];
-        elif v == ID3_V2_3:
-            return [2, 3, 0];
-        elif v == ID3_V2_4:
-            return [2, 4, 0];
-        elif v == ID3_V2:
-            return [2, 4, 0];
-    raise str("constantToVersions - Invalid ID3 version constant: %s" % hex(v));
+   if v & ID3_V1:
+      if v == ID3_V1_0:
+         return [1, 0, 0];
+      elif v == ID3_V1_1:
+         return [1, 1, 0];
+      elif v == ID3_V1:
+         return [1, 1, 0];
+   elif v & ID3_V2:
+      if v == ID3_V2_2:
+         return [2, 2, 0];
+      elif v == ID3_V2_3:
+         return [2, 3, 0];
+      elif v == ID3_V2_4:
+         return [2, 4, 0];
+      elif v == ID3_V2:
+         return [2, 4, 0];
+   raise str("constantToVersions - Invalid ID3 version constant: %s" % hex(v));
 
 ################################################################################
 TRACE = 0;
 prefix = "eyeD3 trace> ";
 def TRACE_MSG(msg):
-    if TRACE:
-        try:
-            print prefix + msg;
-        except UnicodeEncodeError:
-            pass;
+   if TRACE:
+       try:
+           print prefix + msg;
+       except UnicodeEncodeError:
+           pass;
 
 STRICT_ID3 = 0
 def strictID3():
-    return STRICT_ID3
+   return STRICT_ID3
 
 ITUNES_COMPAT = 0
 def itunesCompat():
-    return ITUNES_COMPAT
+   return ITUNES_COMPAT
 ################################################################################
 
 import os;
@@ -201,3 +201,4 @@ def guess_mime_type(filename):
         if mime:
             mime = mime.split(";")[0]
     return mime
+

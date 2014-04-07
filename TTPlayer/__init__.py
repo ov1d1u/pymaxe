@@ -24,7 +24,7 @@ class ttpClient(object):
     '''
     privide ttplayer specific function, such as encoding artist and title,
     generate a Id code for server authorizition.
-    (see http://ttplyrics.googlecode.com/svn/trunk/crack)
+    (see http://ttplyrics.googlecode.com/svn/trunk/crack) 
     '''
     @staticmethod
     def CodeFunc(Id, data):
@@ -33,7 +33,7 @@ class ttpClient(object):
         These code may be ugly coz it is translated
         from C code which is translated from asm code
         grabed by ollydbg from ttp_lrcs.dll.
-        (see http://ttplyrics.googlecode.com/svn/trunk/crack)
+        (see http://ttplyrics.googlecode.com/svn/trunk/crack) 
         '''
         length = len(data)
 
@@ -58,7 +58,7 @@ class ttpClient(object):
             tmp3 = tmp3 | (0x000000FF & (Id >> 24))                                     #右移24位后为0x00000000
 
         #tmp3   18015FE7
-
+        
         i=length-1
         while(i >= 0):
             char = ord(data[i])
@@ -93,7 +93,7 @@ class ttpClient(object):
         if tmp1 > 0x80000000:
             tmp1 = tmp1 - 0x100000000
         return tmp1
-
+    
     @staticmethod
     def EncodeArtTit(str):
         rtn = ''
@@ -112,11 +112,11 @@ class LyricsFetcher:
     def get_lyrics(self, artist, song):
         # replace ampersands and the like
         for exp in LYRIC_ARTIST_REPLACE:
-            p = re.compile(exp[0])
-            artist = p.sub(exp[1], artist)
+                p = re.compile(exp[0])
+                artist = p.sub(exp[1], artist)
         for exp in LYRIC_TITLE_REPLACE:
-            p = re.compile(exp[0])
-            song = p.sub(exp[1], song)
+                p = re.compile(exp[0])
+                song = p.sub(exp[1], song)
 
         # strip things like "(live at Somewhere)", "(accoustic)", etc
         for exp in LYRIC_TITLE_STRIP:
@@ -157,7 +157,7 @@ class LyricsFetcher:
         return Page
 
 if ( __name__ == '__main__' ):
-    # used to test get_lyrics()
+    # used to test get_lyrics() 
     artist = u"许巍".encode('utf8')
     song = u"蓝莲花".encode('utf8')
 

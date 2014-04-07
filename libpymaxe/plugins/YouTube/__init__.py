@@ -77,12 +77,9 @@ class Plugin:
         if self.quality == 'hd1080' or self.quality == 'hd720':
             if '22' in qdict:
                 return qdict['22']
-        if self.quality == 'large':
+        if self.quality == 'large' or self.quality == 'medium':
             if '18' in qdict:
                 return qdict['18']
-        if self.quality == 'medium':
-            if '5' in qdict:
-                return qdict['5']
         if self.quality == 'low':
             if '17' in qdict:
                 return qdict['17']

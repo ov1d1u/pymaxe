@@ -4,7 +4,7 @@ Script to generate module file that describes available properties.
 Since there is no way to get this table directly from mplayer, I am hard-coding
 it from mplayer documentation.
 
-If it changes, you can just pass the name of a text file containing the
+If it changes, you can just pass the name of a text file containing the 
 property table as an argument to this module:
 
 $ python -m mpylayer.gen_properties prop.txt
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         text = open(argv[1])
     else:
         text = text.splitlines()
-
+    
     f = open('prop_table.py', 'w')
     f.write('property_table = %s' % pformat(_gen_property_table(text), indent=4))
     f.close()
