@@ -1,6 +1,17 @@
 #-*- coding: utf-8 -*-
 import thread2, gobject, urllib, urllib2, cStringIO
-from PIL import Image
+try:
+    from PIL import Image
+except:
+    import gtk, os
+    md = gtk.MessageDialog(
+        None,
+        gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR,
+        gtk.BUTTONS_CLOSE, "Dependency missing: pillow")
+    md.run()
+    md.destroy()
+    exit()
+
 
 class coverFinder:
     def __init__(self, pymaxe, callback):
