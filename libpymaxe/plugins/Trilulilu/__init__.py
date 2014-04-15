@@ -27,23 +27,19 @@ class Plugin:
         req.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
         getdata = urllib2.urlopen(req)
         data = getdata.read()
-        results = data.split('<div class="audio_item"')
+        results = data.split('<h1 class="mtm">')
         results.pop(0)
         for x in results:
             try:
-                gurl = x.split('<span class="title"><a href="')
-                gurl = gurl[1].split('">')
+                gurl = x.split('<a href="')
+                gurl = gurl[1].split('"')
                 url = gurl[0]
-                gtitle = gurl[1].split('</a></span>')
-                gtitle = gtitle[0]
+                gtitle = x.split('" title="')
+                gtitle = gtitle[1].split('"')[0]
                 title = gtitle.replace('&#039;', "'")
                 title = title.replace('&amp;', '&')
                 title = functions.remove_html_tags(title)
-                gtime = x.split('<span class="duration">')
-                gtime = gtime[1].split('</span>')
-                timp = gtime[0]
-                if len(timp) == 4:
-                    timp = '0' + timp
+                timp = ''
                 res.append([FILE_TYPE_AUDIO, title, url, timp, False])
             except Exception:
                 pass
