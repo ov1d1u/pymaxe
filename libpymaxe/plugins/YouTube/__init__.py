@@ -7,6 +7,7 @@ import os
 import json
 import re
 import pafy
+import time
 h = HTMLParser.HTMLParser()
 
 FILE_TYPE_AUDIO = 0x01
@@ -61,7 +62,7 @@ class Plugin:
         contentlength = gtdata.info().getheader('Content-Length')
         data = {"url": url,
                 "title": title,
-                "length": length,
+                "length": time.strftime('%M:%S', time.gmtime(length)),
                 "type": FILE_TYPE_VIDEO,
                 "fsize": contentlength,
                 "downurl": downurl,
@@ -87,8 +88,13 @@ class Plugin:
         # fallback
         print 'Fallback quality selection'
         for s in qualities:
+            if s.vidformat == 'video/mp4':
+                return s.url
+            if s.vidformat == 'video/x-flv':
+                return s.url
             if s.vidformat == 'video/flv':
                 return s.url
+            print s.vidformat
 
     def unescape(self, s):
         s = s.replace("&lt;", "<")
