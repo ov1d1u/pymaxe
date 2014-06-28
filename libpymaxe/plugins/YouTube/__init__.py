@@ -72,7 +72,7 @@ class Plugin:
     def select_quality(self, qualities):
         qdict = {}
         for s in qualities:
-            if s.vidformat != 'video/webm':
+            if s._vidformat != 'video/webm':
                 qdict[s.itag] = s.url
 
         if self.quality == 'hd1080' or self.quality == 'hd720':
@@ -88,13 +88,13 @@ class Plugin:
         # fallback
         print 'Fallback quality selection'
         for s in qualities:
-            if s.vidformat == 'video/mp4':
+            if s._vidformat == 'video/mp4':
                 return s.url
-            if s.vidformat == 'video/x-flv':
+            if s._vidformat == 'video/x-flv':
                 return s.url
-            if s.vidformat == 'video/flv':
+            if s._vidformat == 'video/flv':
                 return s.url
-            print s.vidformat
+            print s._vidformat
 
     def unescape(self, s):
         s = s.replace("&lt;", "<")

@@ -27,7 +27,7 @@ class Plugin:
         req.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
         getdata = urllib2.urlopen(req)
         data = getdata.read()
-        results = data.split('<h1 class="mtm">')
+        results = data.split('<div class="relative mvm has-ql-btn">')
         results.pop(0)
         for x in results:
             try:
@@ -39,7 +39,11 @@ class Plugin:
                 title = gtitle.replace('&#039;', "'")
                 title = title.replace('&amp;', '&')
                 title = functions.remove_html_tags(title)
-                timp = ''
+                gtime = x.split('class="duration label label-inverse absolute abs-right">')
+                gtime = gtime[1].split('</span>')
+                timp = gtime[0]
+                if len(timp) == 4:
+                    timp = '0' + timp
                 res.append([FILE_TYPE_AUDIO, title, url, timp, False])
             except Exception:
                 pass

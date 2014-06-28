@@ -29,7 +29,7 @@ class Plugin:
         self.streamurls = {}
         res = []
         req = urllib2.Request('http://music.zakon.kz/search.php?q=' + urllib.quote(query))
-        req.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0')
         getdata = urllib2.urlopen(req)
         data = getdata.read()
         results = data.split('<mp3>')
@@ -55,8 +55,9 @@ class Plugin:
 
     def fileData(self, url):
         item = self.streamurls[url]
+        print("Kazon: fileData for url: {0}".format(item.downurl))
         rq = urllib2.Request(item.downurl)
-        rq.add_header('User-Agent', 'Mozilla/6.0 (Macintosh; I; Intel Mac OS X 11_7_9; de-LI; rv:1.9b4) Gecko/2012010317 Firefox/10.0a4')
+        rq.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0')
         gtdata = urllib2.urlopen(rq)
         contentlength = gtdata.info().getheader('Content-Length')
         data = {"url": url,
