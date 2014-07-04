@@ -176,7 +176,7 @@ class Main:
     def populateFileFormats(self):
         liststore = self.gui.get_object('fileFormats')
         liststore.append(['No conversion', 'None', ''])
-        liststore.append(['MP3 File', '-b 192k -i INPUT OUTPUT', '.mp3'])
+        liststore.append(['MP3 File', '-i INPUT -b 192k OUTPUT', '.mp3'])
         liststore.append(['AAC File', '-i INPUT -acodec aac -strict experimental -ab 128k OUTPUT', '.aac'])
         liststore.append(['OGG File', '-i INPUT -acodec libvorbis -aq 100 OUTPUT', '.ogg'])
         liststore.append(['AVI File', '-sameq -i INPUT OUTPUT', '.avi'])

@@ -28,6 +28,8 @@ class FFConvert:
         thread2.Thread(target=self.runffmpeg).start()
 
     def runffmpeg(self):
+        print("Running ffmpeg:")
+        print(' '.join(self.cmd))
         if os.environ.get("APPDATA"):
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
