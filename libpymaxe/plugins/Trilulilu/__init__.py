@@ -40,7 +40,7 @@ class Plugin:
                 title = title.replace('&amp;', '&')
                 title = functions.remove_html_tags(title)
                 gtime = x.split('class="duration label label-inverse absolute abs-right">')
-                gtime = gtime[1].split('</span>')
+                gtime = gtime[1].split('</div>')
                 timp = gtime[0]
                 if len(timp) == 4:
                     timp = '0' + timp
