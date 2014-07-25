@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 #-*- coding: utf-8 -*-
-version = '0.70'
+version = '0.71'
 
 import sys, os
 path = os.getcwd()
@@ -233,7 +233,7 @@ class Main:
     def search(self, value):
         if value == '':
             return
-        if value.startswith('http://'):
+        if value.startswith('http://') or value.startswith('https://'):
             self.stopSong(None)
             self.gui.get_object('hbox5').set_sensitive(False)
             self.gui.get_object('hbox13').set_sensitive(False)

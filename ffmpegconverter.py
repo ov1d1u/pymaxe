@@ -57,6 +57,7 @@ class FFConvert:
 
     def getProgress(self, skipthis = 0):
         chunk = self.chunk
+        print chunk
         if not chunk:
             return
         if not self.time_seconds:

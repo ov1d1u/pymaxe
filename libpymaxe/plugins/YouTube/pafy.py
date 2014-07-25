@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Python API for YouTube.
+pafy.py.
+
+Python library to retrieve YouTube content and metadata
 
 https://github.com/np1/pafy
 
@@ -25,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
-__version__ = "0.3.52"
+__version__ = "0.3.58"
 __author__ = "nagev"
 __license__ = "GPLv3"
 
@@ -97,7 +99,7 @@ def fetch_decode(url):
 
 
 def new(url, basic=True, gdata=False, signature=True, size=False,
-        callback=None):
+        callback=lambda x: None):
     """ Return a new pafy instance given a url or video id.
 
     Optional arguments:
@@ -275,6 +277,19 @@ def _extract_function_from_js(name, js):
     return func
 
 
+def _extract_dictfunc_from_js(name, js):
+    """ Find anonymous function from within a dict. """
+    dbg("Extracting function '%s' from javascript", name)
+    var, _, fname = name.partition(".")
+    fpattern = (r'var\s+%s\s*\=\s*\{.{,2000}?%s'
+                r'\:function\(((?:\w+,?)+)\)\{([^}]+)\}')
+    m = re.search(fpattern % (re.escape(var), re.escape(fname)), js)
+    args, body = m.groups()
+    dbg("extracted dict function %s(%s){%s};", name, args, body)
+    func = {'name': name, 'parameters': args.split(","), 'body': body}
+    return func
+
+
 def _get_mainfunc_from_js(js):
     """ Return main signature decryption function from javascript as dict. """
     dbg("Scanning js for main function.")
@@ -290,7 +305,11 @@ def _get_other_funcs(primary_func, js):
     dbg("scanning javascript for secondary functions.")
     body = primary_func['body']
     body = body.split(";")
+    # standard function call; X=F(A,B,C...)
     call = re.compile(r'(?:[$\w+])=([$\w]+)\(((?:\w+,?)+)\)$')
+
+    # dot notation function call; X=O.F(A,B,C..)
+    dotcall = re.compile(r'(?:[$\w+]=)?([$\w]+)\.([$\w]+)\(((?:\w+,?)+)\)$')
 
     functions = {}
 
@@ -308,6 +327,17 @@ def _get_other_funcs(primary_func, js):
 
             # else:
                 # dbg("function '%s' is already in map.", name)
+        elif dotcall.match(part):
+
+            match = dotcall.match(part)
+            name = "%s.%s" % (match.group(1), match.group(2))
+
+            # don't treat X=A.slice(B) as X=O.F(B)
+            if match.group(2) == "slice":
+                continue
+
+            if name not in functions:
+                functions[name] = _extract_dictfunc_from_js(name, js)
 
     return functions
 
@@ -340,15 +370,19 @@ def _get_func_from_call(caller, name, arguments, js_url):
 
     for n, arg in enumerate(arguments):
         value = _getval(arg, caller['args'])
-        param = newfunction['parameters'][n]
-        newfunction['args'][param] = value
+
+        # function may not use all arguments
+        if n < len(newfunction['parameters']):
+            param = newfunction['parameters'][n]
+            newfunction['args'][param] = value
 
     return newfunction
 
 
 def _solve(f, js_url):
     """Solve basic javascript function. Return solution value (str). """
-    # pylint: disable=R0914
+    # pylint: disable=R0914,R0912
+    resv = "slice|splice|reverse"
     patterns = {
         'split_or_join': r'(\w+)=\1\.(?:split|join)\(""\)$',
         'func_call': r'(\w+)=([$\w]+)\(((?:\w+,?)+)\)$',
@@ -357,7 +391,15 @@ def _solve(f, js_url):
         'x3': r'(\w+)\[(\w+)\]=(\w+)$',
         'return': r'return (\w+)(\.join\(""\))?$',
         'reverse': r'(\w+)=(\w+)\.reverse\(\)$',
-        'slice': r'(\w+)=(\w+)\.slice\((\w+)\)$'
+        'reverse_noass': r'(\w+)\.reverse\(\)$',
+        'return_reverse': r'return (\w+)\.reverse()$',
+        'slice': r'(\w+)=(\w+)\.slice\((\w+)\)$',
+        'splice_noass': r'([$\w]+)\.splice\(([$\w]+)\,([$\w]+)\)$',
+        'return_slice': r'return (\w+)\.slice\((\w+)\)$',
+        'func_call_dict': r'(\w)=([$\w]+)\.(?!%s)([$\w]+)\(((?:\w+,?)+)\)$'
+                          % resv,
+        'func_call_dict_noret': r'([$\w]+)\.(?!%s)([$\w]+)\(((?:\w+,?)+)\)$'
+                                % resv
     }
 
     parts = f['body'].split(";")
@@ -377,6 +419,25 @@ def _solve(f, js_url):
 
         if name == "split_or_join":
             pass
+
+        elif name == "func_call_dict":
+            lhs, dic, key, args = m.group(1, 2, 3, 4)
+            funcname = "%s.%s" % (dic, key)
+            newfunc = _get_func_from_call(f, funcname, args.split(","), js_url)
+            f['args'][lhs] = _solve(newfunc, js_url)
+
+        elif name == "func_call_dict_noret":
+            dic, key, args = m.group(1, 2, 3)
+            funcname = "%s.%s" % (dic, key)
+            newfunc = _get_func_from_call(f, funcname, args.split(","), js_url)
+            _solve.expect_noret = True
+            changed_args = _solve(newfunc, js_url)
+            _solve.expect_noret = False
+
+            for arg in f['args']:
+
+                if arg in changed_args:
+                    f['args'][arg] = changed_args[arg]
 
         elif name == "func_call":
             lhs, funcname, args = m.group(1, 2, 3)
@@ -405,11 +466,30 @@ def _solve(f, js_url):
         elif name == "reverse":
             f['args'][m.group(1)] = _getval(m.group(2), f['args'])[::-1]
 
+        elif name == "reverse_noass":
+            f['args'][m.group(1)] = _getval(m.group(1), f['args'])[::-1]
+
+        elif name == "splice_noass":
+            a, b, c = [_getval(x, f['args']) for x in m.group(1, 2, 3)]
+            f['args'][m.group(1)] = a[:b] + a[b + c:]
+
+        elif name == "return_reverse":
+            return f['args'][m.group(1)][::-1]
+
+        elif name == "return_slice":
+            a, b = [_getval(x, f['args']) for x in m.group(1, 2)]
+            return a[b:]
+
         elif name == "slice":
             a, b, c = [_getval(x, f['args']) for x in m.group(1, 2, 3)]
             f['args'][m.group(1)] = b[c:]
 
-    raise IOError("Processed js funtion parts without finding return")
+    if _solve.expect_noret:
+        return f['args']
+
+    else:
+        raise IOError("Processed js funtion parts without finding return")
+
 
 
 def _decodesig(sig, js_url):
@@ -518,7 +598,9 @@ class Stream(object):
 
     def __init__(self, sm, parent):
         """ Set initial values. """
-        safeint = lambda x: int(x) if x.isdigit() else x
+        def safeint(x):
+            """ Return type int if x is a digit. """
+            return int(x) if x.isdigit() else x
 
         self._itag = sm['itag']
         self._threed = 'stereo3d' in sm and sm['stereo3d'] == '1'
@@ -531,7 +613,7 @@ class Stream(object):
         self._title = parent.title
         self.encrypted = 's' in sm
         self._parent = parent
-        self._filename = self.title + "." + self.extension
+        self._filename = self.generate_filename()
         self._fsize = None
         self._bitrate = self._rawbitrate = None
         self._mediatype = g.itags[self.itag][2]
@@ -539,6 +621,7 @@ class Stream(object):
         self._url = None
         self._rawurl = sm['url']
         self._sig = sm['s'] if self.encrypted else sm.get("sig")
+        self._active = False
 
         if self.mediatype == "audio":
             self._dimensions = (0, 0)
@@ -546,6 +629,21 @@ class Stream(object):
             self._quality = self.bitrate
             self._resolution = "0x0"
             self._rawbitrate = int(sm["bitrate"])
+
+    def generate_filename(self, meta=False):
+        """ Generate filename. """
+        ok = re.compile(r'[^/]')
+
+        if os.name == "nt":
+            ok = re.compile(r'[^\\/:*?"<>|]')
+
+        filename = "".join(x if ok.match(x) else "_" for x in self._title)
+
+        if meta:
+            filename += "-%s-%s" % (self._parent.videoid, self._itag)
+
+        filename += "." + self._extension
+        return filename
 
     @property
     def rawbitrate(self):
@@ -684,18 +782,34 @@ class Stream(object):
 
         return self._fsize
 
-    def download(self, filepath="", quiet=False, callback=None):
-        """ Download.  Use quiet=True to supress output. Return filename. """
-        # pylint: disable=R0914
-        # Too many local variables - who cares?
+    def cancel(self):
+        """ Cancel an active download. """
+        if self._active:
+            self._active = False
+            return True
 
-        def safe_filename(ff):
-            """ Remove troublesome characters in basename. """
-            d, b = os.path.split(ff)
-            ok = re.compile(r'[^\\/?*$\'"%&:<>|]')
-            b = "".join(x if ok.match(x) else "_" for x in b)
-            ff = os.path.join(d, b)
-            return ff.encode("utf8", "ignore")
+    def download(self, filepath="", quiet=False, callback=lambda *x: None,
+                 meta=False):
+        """ Download.  Use quiet=True to supress output. Return filename.
+
+        Use meta=True to append video id and itag to generated filename
+
+        """
+        # pylint: disable=R0912,R0914
+        # Too many branches, too many local vars
+        savedir = filename = ""
+
+        if filepath and os.path.isdir(filepath):
+            savedir, filename = filepath, self.generate_filename()
+
+        elif filepath:
+            savedir, filename = os.path.split(filepath)
+
+        else:
+            filename = self.generate_filename(meta=meta)
+
+        filepath = os.path.join(savedir, filename)
+        temp_filepath = filepath + ".temp"
 
         status_string = ('  {:,} Bytes [{:.2%}] received. Rate: [{:4.0f} '
                          'KB/s].  ETA: [{:.0f} secs]')
@@ -707,35 +821,16 @@ class Stream(object):
         response = g.opener.open(self.url)
         total = int(response.info()['Content-Length'].strip())
         chunksize, bytesdone, t0 = 16384, 0, time.time()
-        fname = filepath or self.filename
-        dirname = os.path.dirname(fname)
 
-        if dirname and not os.path.isdir(dirname):
-            raise IOError("Invalid directory: %s" % dirname)
+        fmode, offset = "wb", 0
 
-        elif os.path.isdir(fname):
-            fname = os.path.join(fname, self.filename)
+        if os.path.exists(temp_filepath):
+            if os.stat(temp_filepath).st_size < total:
 
-        temp = os.path.join(os.path.dirname(fname), self._parent.title)
-        tempfname = "%s_%s_%s.part" % (temp, self._parent.videoid, self.itag)
-        safename, fmode, offset = safe_filename(tempfname), "wb", 0
+                offset = os.stat(temp_filepath).st_size
+                fmode = "ab"
 
-        if os.path.exists(tempfname) and os.stat(tempfname).st_size < total:
-            offset = os.stat(tempfname).st_size
-            fmode = "ab"
-
-        elif os.path.exists(safename) and os.stat(safename).st_size < total:
-            offset = os.stat(safename).st_size
-            fmode = "ab"
-
-        try:
-            outfh = open(tempfname, fmode)
-
-        except IOError:
-            # remove special chars from filename
-            fname = safe_filename(fname)
-            tempfname = safename
-            outfh = open(tempfname, fmode)
+        outfh = open(temp_filepath, fmode)
 
         if offset:
             # partial file exists, resume download
@@ -745,7 +840,9 @@ class Stream(object):
             response = resuming_opener.open(self.url)
             bytesdone = offset
 
-        while True:
+        self._active = True
+
+        while self._active:
             chunk = response.read(chunksize)
             outfh.write(chunk)
             elapsed = time.time() - t0
@@ -766,8 +863,13 @@ class Stream(object):
             if callback:
                 callback(total, *progress_stats)
 
-        os.rename(tempfname, fname)
-        return fname
+        if self._active:
+            os.rename(temp_filepath, filepath)
+            return filepath
+
+        else:
+            outfh.close()
+            return temp_filepath
 
 
 class Pafy(object):
@@ -777,14 +879,13 @@ class Pafy(object):
     funcmap = {}  # keep functions as a class variable
 
     def __init__(self, video_url, basic=True, gdata=False,
-                 signature=True, size=False, callback=None):
+                 signature=True, size=False, callback=lambda x: None):
         """ Set initial values. """
         self.version = __version__
         self.videoid = extract_video_id(video_url)
         self.watchv_url = g.urls['watchv'] % self.videoid
 
-        nullf = lambda x: None
-        new.callback = callback or nullf
+        new.callback = callback
         self._have_basic = False
         self._have_gdata = False
 
@@ -851,22 +952,24 @@ class Pafy(object):
             allinfo = get_video_info(self.videoid)
 
         new.callback("Fetched video info")
-        f = lambda x: allinfo.get(x, ["unknown"])[0]
-        t = lambda x: allinfo.get(x, [0.0])[0]
-        z = lambda x: allinfo.get(x, [""])[0]
 
-        self._title = f('title').replace("/", "-")
-        self._author = f('author')
-        self._videoid = f('video_id')
-        self._rating = float(t('avg_rating'))
-        self._length = int(f('length_seconds'))
-        self._viewcount = int(f('view_count'))
-        self._thumb = unquote_plus(f('thumbnail_url'))
-        self._formats = [x.split("/") for x in f('fmt_list').split(",")]
-        self._keywords = z('keywords').split(',')
-        self._bigthumb = z('iurlsd')
-        self._bigthumbhd = z('iurlsdmaxres')
-        self.ciphertag = f("use_cipher_signature") == "True"
+        def _get_lst(key, default="unknown", dic=allinfo):
+            """ Dict get function, returns first index. """
+            retval = dic.get(key, default)
+            return retval[0] if retval != default else default
+
+        self._title = _get_lst('title')
+        self._author = _get_lst('author')
+        self._videoid = _get_lst('video_id')
+        self._rating = float(_get_lst('avg_rating', 0.0))
+        self._length = int(_get_lst('length_seconds', 0))
+        self._viewcount = int(_get_lst('view_count'), 0)
+        self._thumb = unquote_plus(_get_lst('thumbnail_url', ""))
+        self._formats = [x.split("/") for x in _get_lst('fmt_list').split(",")]
+        self._keywords = _get_lst('keywords', "").split(',')
+        self._bigthumb = _get_lst('iurlsd', "")
+        self._bigthumbhd = _get_lst('iurlsdmaxres', "")
+        self.ciphertag = _get_lst("use_cipher_signature") == "True"
 
         if ageurl:
             self.ciphertag = False
@@ -1163,7 +1266,7 @@ class Pafy(object):
 
 
 def get_playlist(playlist_url, basic=False, gdata=False, signature=False,
-                 size=False, callback=None):
+                 size=False, callback=lambda x: None):
     """ Return a dict containing Pafy objects from a YouTube Playlist.
 
     The returned Pafy objects are initialised using the arguments to
@@ -1172,8 +1275,6 @@ def get_playlist(playlist_url, basic=False, gdata=False, signature=False,
     """
     # pylint: disable=R0914
     # too many local vars
-    nullf = lambda x: None
-    callback = callback or nullf
     x = (r"-_0-9a-zA-Z",) * 2 + (r'(?:\&|\#.{1,1000})',)
     regx = re.compile(r'(?:^|[^%s]+)([%s]{18,})(?:%s|$)' % x)
     m = regx.search(playlist_url)
