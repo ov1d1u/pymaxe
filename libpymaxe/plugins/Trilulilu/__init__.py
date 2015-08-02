@@ -71,7 +71,7 @@ class Plugin:
         postdata = chr(0x00) + chr(0x03) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x01) + chr(0x00) + chr(0x0f) + chr(0x66) + chr(0x69) + chr(0x6c) + chr(0x65) + chr(0x2e) + chr(0x61) + chr(0x75) + chr(0x64) + chr(0x69) + chr(0x6f) + chr(0x5f) + chr(0x69) + chr(0x6e) + chr(0x66) + chr(0x6f) + chr(0x00) + chr(0x02) + chr(0x2f) + chr(0x31) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x25) + chr(0x0a) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x03) + chr(0x02) + chr(0x00) + chr(lenusername) + username + chr(0x02) + chr(0x00) + chr(0x0e) + shash + chr(0x02) + chr(0x00) + chr(0x04) + chr(0x70) + chr(0x6c) + chr(0x61) + chr(0x79)
         req = urllib2.Request("http://www.trilulilu.ro/amf", postdata)
         req.add_header("Content-Type", "application/x-amf")
-        req.add_header("Referer:", "http://static.trilulilu.ro/flash/player/audioplayer2011.swf")
+        req.add_header("Referer", "http://static.trilulilu.ro/flash/player/audioplayer2011.swf")
         getdata = urllib2.urlopen(req)
         amfdata = getdata.read()
         gartist = amfdata.split('artist' + chr(0x02) + chr(0x00))
